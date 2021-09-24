@@ -29,32 +29,41 @@ const schema = buildSchema(`
     username: String
     age: Int
     posts: [Post]
-}
+},
 
 type Post {
     id: ID
     title: String
     content: String
-}
+},
 
 input UserInput {
     id: ID
     username: String!
     age: Int!
     posts: [PostInput]
-}
+},
 
 input PostInput {
     id: ID
     title: String!
     content: String!
-}
+},
 
 type Query {
     getAllUsers: [User]
     getUser(id: ID): User
+},
+
+type Mutation {
+    createUser(input: UserInput): User
 }
 `);
+
+const createUser = (input) => {
+    const id = Date.now()
+    return {id, ...input}
+}
 
 const root = {
     getAllUsers: () => {
@@ -65,6 +74,12 @@ const root = {
         return allUsers.find(
             ({id}) => params.id === id
         )
+    },
+
+    createUser: ({ input }) => {
+        const user = createUser(input)
+        allUsers.push(user)
+        return user
     },
 
     addUser: params => {
